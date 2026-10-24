@@ -1,4 +1,4 @@
-# Ledgerly Business OS
+# LedgerDesk Business OS
 
 A future-ready multi-sector business application focused on inventory, professional invoicing, freelancing operations and optional full accounting.
 

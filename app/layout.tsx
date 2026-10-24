@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ledgerly — Business Operations",
+  title: "LedgerDesk — Business Operations",
   description: "Inventory, invoicing and agency operations in one focused workspace.",
-  applicationName: "Ledgerly",
+  applicationName: "LedgerDesk",
   manifest: "/manifest.webmanifest",
 };
 

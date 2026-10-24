@@ -59,13 +59,13 @@ export function AuthForm({ nextPath }: { nextPath?: string }) {
     <div className="grid min-h-screen bg-[#f5f7fa] lg:grid-cols-[1fr_480px]">
       <section className="relative hidden overflow-hidden bg-[#17263f] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="absolute -left-20 top-1/3 size-96 rounded-full bg-blue-500/20 blur-3xl" />
-        <Link href="/" className="relative flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-[#6d8dff]"><Sparkles size={19} /></span><span className="heading text-lg font-extrabold">Ledgerly</span></Link>
+        <Link href="/" className="relative flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-[#6d8dff]"><Sparkles size={19} /></span><span className="heading text-lg font-extrabold">LedgerDesk</span></Link>
         <div className="relative max-w-xl"><p className="text-xs font-bold uppercase tracking-[.2em] text-blue-300">Secure business workspace</p><h1 className="heading mt-4 text-4xl font-extrabold leading-tight">Your inventory, invoices and agency accounts—privately separated.</h1><div className="mt-8 grid gap-3 text-sm text-slate-300">{["Workspace-isolated data", "Audited stock and accounting", "Professional client invoices"].map((item) => <p key={item} className="flex items-center gap-3"><CheckCircle2 size={17} className="text-emerald-400" />{item}</p>)}</div></div>
         <p className="relative text-xs text-slate-500">Supabase authentication activates after final environment setup.</p>
       </section>
       <main className="flex items-center justify-center p-5 sm:p-10">
         <div className="w-full max-w-sm">
-          <Link href="/" className="mb-10 flex items-center gap-3 lg:hidden"><span className="grid size-10 place-items-center rounded-xl bg-[#246bfd] text-white"><Sparkles size={18} /></span><span className="heading font-extrabold">Ledgerly</span></Link>
+          <Link href="/" className="mb-10 flex items-center gap-3 lg:hidden"><span className="grid size-10 place-items-center rounded-xl bg-[#246bfd] text-white"><Sparkles size={18} /></span><span className="heading font-extrabold">LedgerDesk</span></Link>
           <p className="text-xs font-bold uppercase tracking-[.16em] text-[#6f7b8d]">Business Super User</p>
           <h2 className="heading mt-3 text-3xl font-extrabold text-[#17263f]">{mode === "signin" ? "Welcome back" : "Create your account"}</h2>
           <p className="mt-2 text-sm leading-6 text-[#7c8798]">{mode === "signin" ? "Sign in to open your private workspace." : "The first account becomes the workspace owner during setup."}</p>

@@ -105,7 +105,7 @@ export function SetupWizard() {
         <div className="relative">
           <Link href="/" className="inline-flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-xl bg-[#6d8dff]"><Sparkles size={19} /></span>
-            <span className="heading text-lg font-extrabold">Ledgerly</span>
+            <span className="heading text-lg font-extrabold">LedgerDesk</span>
           </Link>
 
           <div className="mt-10 hidden lg:block">

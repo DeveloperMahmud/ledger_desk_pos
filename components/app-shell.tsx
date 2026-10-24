@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Sparkles size={20} strokeWidth={2.5} />
               </span>
               <span>
-                <span className="heading block text-[17px] font-extrabold tracking-tight">Ledgerly</span>
+                <span className="heading block text-[17px] font-extrabold tracking-tight">LedgerDesk</span>
                 <span className="block text-[10px] font-semibold uppercase tracking-[.18em] text-slate-400">Business OS</span>
               </span>
             </Link>

@@ -10,7 +10,7 @@ Inventory follows a configuration-aware repository pattern: without environment 
 
 Invoicing uses the same preview/live boundary. `create_invoice_draft` and `update_invoice_draft` keep headers, line items, totals and sequence allocation transactional. Invoice issue, payment, public-link creation and email queuing stay behind trusted database functions. The public route calls the anon-safe hashed-token RPC and never receives creator IDs or payment-proof paths.
 
-Ledgerly is a sector-aware business management application built with Next.js App Router, React, TypeScript, Tailwind CSS and Supabase/PostgreSQL. UI components currently use typed demo repositories so every workflow can be reviewed before external credentials are connected. Database migrations already define the production data model, RLS boundaries and transactional functions.
+LedgerDesk is a sector-aware business management application built with Next.js App Router, React, TypeScript, Tailwind CSS and Supabase/PostgreSQL. Inventory and invoicing automatically switch between typed preview data and live workspace repositories; the remaining modules stay preview-first until their repository adapters are connected. Database migrations define the production data model, RLS boundaries and transactional functions.
 
 ## Module boundaries
 

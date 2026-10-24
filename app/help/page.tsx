@@ -16,7 +16,7 @@ export default function HelpPage() {
         <header className="rounded-3xl bg-[#17263f] p-7 text-white sm:p-10">
           <span className="grid size-11 place-items-center rounded-xl bg-white/10"><LifeBuoy size={21} /></span>
           <p className="mt-6 text-xs font-bold uppercase tracking-[.18em] text-blue-300">Quick start</p>
-          <h1 className="heading mt-2 text-3xl font-extrabold">Ledgerly Help Center</h1>
+          <h1 className="heading mt-2 text-3xl font-extrabold">LedgerDesk Help Center</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">The shortest path from first setup to a professional invoice and accurate business records.</p>
         </header>
         <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
