@@ -1,0 +1,1 @@
+import {AppShell} from "@/components/app-shell";import {AccountingDashboard} from "@/components/accounting/accounting-dashboard";export default function AccountingPage(){return <AppShell><AccountingDashboard/></AppShell>;}
