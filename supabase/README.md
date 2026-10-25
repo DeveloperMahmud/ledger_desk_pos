@@ -14,6 +14,8 @@ This directory contains the complete Release 1 backend definition. Apply the mig
 8. `202610240008_inventory_atomic_create.sql` - transactional catalog/category/unit creation with optional opening stock.
 9. `202610240009_invoice_atomic_draft.sql` - transactional invoice sequencing, header and line-item creation.
 10. `202610240010_invoice_draft_update.sql` - atomic editing and recalculation of existing draft invoices.
+11. `202610250011_crm_operations.sql` - audited CRM lead operations and atomic proposal drafts/status changes.
+12. `202610250012_team_notifications_future_modules.sql` - secure invitations, notifications, branches, purchasing, transfers, manufacturing and recurring billing foundations.
 
 ## Security model
 

@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowRight, BriefcaseBusiness, CalendarClock, CircleDollarSign, Mail, Phone, Plus, Search, Sparkles, UserCheck, Users } from "lucide-react";
 import { clients as initialClients, leads as initialLeads } from "@/lib/crm/demo-data";
 import { convertLeadToClient } from "@/lib/crm/rules";
+import { convertLiveLead, createLiveLead, loadLiveCrm } from "@/lib/crm/repository";
 import type { Lead, LeadStage } from "@/lib/crm/types";
 import { formatMoney } from "@/lib/inventory/rules";
 import { cn } from "@/lib/utils";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 const stages: { value: LeadStage; label: string; tone: string }[] = [
   { value: "new", label: "New", tone: "bg-sky-50 text-sky-700" },
@@ -22,26 +24,39 @@ export function CrmDashboard() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Lead | null>(null);
   const [notice, setNotice] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [dataMode, setDataMode] = useState<"preview" | "loading" | "live" | "error">(isSupabaseConfigured() ? "loading" : "preview");
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    let active = true;
+    loadLiveCrm().then((data) => { if (active) { setLeadRows(data.leads); setClientRows(data.clients); setDataMode("live"); } }).catch((error) => { if (active) { setActionError(error instanceof Error ? error.message : "CRM data could not be loaded."); setDataMode("error"); } });
+    return () => { active = false; };
+  }, []);
 
   const visibleClients = useMemo(() => clientRows.filter((client) => `${client.name} ${client.company} ${client.email}`.toLowerCase().includes(query.toLowerCase())), [clientRows, query]);
   const pipelineValue = leadRows.reduce((sum, lead) => sum + lead.estimatedValue, 0);
 
-  function convertSelected() {
+  async function convertSelected() {
     if (!selected) return;
-    const client = convertLeadToClient(selected);
-    setClientRows((current) => [client, ...current]);
-    setLeadRows((current) => current.filter((lead) => lead.id !== selected.id));
-    setNotice(`${selected.company || selected.name} is now a client. Create a proposal to continue.`);
-    setSelected(null);
-    setView("clients");
+    setSaving(true); setActionError("");
+    try { const client = convertLeadToClient(selected); if (dataMode === "live") client.id = await convertLiveLead(selected.id); setClientRows((current) => [client, ...current]); setLeadRows((current) => current.filter((lead) => lead.id !== selected.id)); setNotice(`${selected.company || selected.name} is now a client. Create a proposal to continue.`); setSelected(null); setView("clients"); }
+    catch (error) { setActionError(error instanceof Error ? error.message : "Lead could not be converted."); }
+    finally { setSaving(false); }
   }
+
+  async function addLead(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const form = new FormData(event.currentTarget); const input={name:String(form.get("name")||"").trim(),company:String(form.get("company")||"").trim(),email:String(form.get("email")||"").trim(),phone:String(form.get("phone")||"").trim(),service:String(form.get("service")||"").trim(),source:String(form.get("source")||"Direct").trim(),estimatedValue:Number(form.get("value")||0),nextFollowUp:String(form.get("followUp")||"")}; if(input.name.length<2||!input.email){setActionError("Lead name and email are required.");return;} setSaving(true);setActionError("");try{const id=dataMode==="live"?await createLiveLead(input):`preview-${Date.now()}`;setLeadRows(current=>[{id,...input,stage:"new",nextFollowUp:input.nextFollowUp||"Not set"},...current]);setAdding(false);setNotice(`${input.company||input.name} added to the lead pipeline.`);}catch(error){setActionError(error instanceof Error?error.message:"Lead could not be created.");}finally{setSaving(false);}}
 
   return (
     <div className="mx-auto max-w-[1500px] px-4 py-7 sm:px-7 lg:px-10 lg:py-9">
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div><p className="mb-1 text-xs font-semibold text-[#7a8495]">Relationships & sales pipeline</p><h1 className="heading text-2xl font-extrabold tracking-[-.03em] text-[#17263f] sm:text-[30px]">CRM workspace</h1><p className="mt-1.5 text-sm text-[#7b8596]">Turn enquiries into organized, billable client work.</p></div>
-        <button className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-blue-500/20"><Plus size={16} /> Add lead</button>
+        <div><p className="mb-1 text-xs font-semibold text-[#7a8495]">Relationships & sales pipeline</p><h1 className="heading text-2xl font-extrabold tracking-[-.03em] text-[#17263f] sm:text-[30px]">CRM workspace</h1><p className="mt-1.5 text-sm text-[#7b8596]">Turn enquiries into organized, billable client work. <span className="ml-1 text-[9px] font-extrabold uppercase">{dataMode}</span></p></div>
+        <button onClick={()=>setAdding(true)} className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-blue-500/20"><Plus size={16} /> Add lead</button>
       </header>
+
+      {actionError && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{actionError}</p>}
 
       {notice && <div className="mt-5 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800"><UserCheck size={17} /> {notice}</div>}
 
@@ -72,7 +87,8 @@ export function CrmDashboard() {
         </section>
       )}
 
-      {selected && <div className="fixed inset-0 z-50 grid place-items-center bg-[#111c2d]/55 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Lead details"><div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-[#edf2ff] text-[#4261b5]"><Sparkles size={19} /></span><div><p className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8a94a3]">Qualified opportunity</p><h2 className="heading mt-1 text-lg font-extrabold text-[#23324a]">{selected.company}</h2></div></div><div className="mt-5 grid gap-3 rounded-xl bg-[#f7f8fa] p-4 text-xs sm:grid-cols-2"><Small label="Contact" value={selected.name} /><Small label="Service" value={selected.service} /><Small label="Potential value" value={formatMoney(selected.estimatedValue)} /><Small label="Next follow-up" value={selected.nextFollowUp} /></div><p className="mt-4 text-xs leading-5 text-[#718095]">Converting keeps this contact and creates a client profile. The next step is a professional proposal.</p><div className="mt-6 flex justify-end gap-2"><button onClick={() => setSelected(null)} className="rounded-xl border border-[#dfe3e9] px-4 py-2.5 text-xs font-bold text-[#627084]">Cancel</button><button onClick={convertSelected} className="inline-flex items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white"><BriefcaseBusiness size={15} /> Convert to client <ArrowRight size={14} /></button></div></div></div>}
+      {selected && <div className="fixed inset-0 z-50 grid place-items-center bg-[#111c2d]/55 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Lead details"><div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-[#edf2ff] text-[#4261b5]"><Sparkles size={19} /></span><div><p className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8a94a3]">Qualified opportunity</p><h2 className="heading mt-1 text-lg font-extrabold text-[#23324a]">{selected.company}</h2></div></div><div className="mt-5 grid gap-3 rounded-xl bg-[#f7f8fa] p-4 text-xs sm:grid-cols-2"><Small label="Contact" value={selected.name} /><Small label="Service" value={selected.service} /><Small label="Potential value" value={formatMoney(selected.estimatedValue)} /><Small label="Next follow-up" value={selected.nextFollowUp} /></div><p className="mt-4 text-xs leading-5 text-[#718095]">Converting keeps this contact and creates a client profile. The next step is a professional proposal.</p><div className="mt-6 flex justify-end gap-2"><button onClick={() => setSelected(null)} className="rounded-xl border border-[#dfe3e9] px-4 py-2.5 text-xs font-bold text-[#627084]">Cancel</button><button disabled={saving} onClick={convertSelected} className="inline-flex items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white disabled:opacity-60"><BriefcaseBusiness size={15} /> {saving?"Converting...":"Convert to client"} <ArrowRight size={14} /></button></div></div></div>}
+      {adding && <div className="fixed inset-0 z-50 grid place-items-center bg-[#111c2d]/55 p-4" role="dialog" aria-modal="true"><form onSubmit={addLead} className="w-full max-w-xl rounded-2xl bg-white p-6"><h2 className="text-lg font-extrabold text-[#23324a]">Add a new lead</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{[["name","Contact name"],["company","Company"],["email","Email"],["phone","Phone"],["service","Service interest"],["source","Source"],["value","Estimated value"],["followUp","Follow-up date"]].map(([name,label])=><label key={name}><span className="mb-2 block text-xs font-bold text-[#46556b]">{label}</span><input name={name} type={name==="value"?"number":name==="followUp"?"date":name==="email"?"email":"text"} required={["name","email","service"].includes(name)} className="h-11 w-full rounded-xl border border-[#dce1e8] px-3 text-xs"/></label>)}</div><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={()=>setAdding(false)} className="rounded-xl border px-4 py-2.5 text-xs font-bold">Cancel</button><button disabled={saving} className="rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white disabled:opacity-60">{saving?"Saving...":"Save lead"}</button></div></form></div>}
     </div>
   );
 }

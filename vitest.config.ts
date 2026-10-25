@@ -8,7 +8,8 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
+    // Domain-rule tests do not need a browser; Node is faster and more stable on free Windows runners.
+    environment: "node",
     include: ["tests/**/*.test.ts"],
     // Keep Windows CI/free-tier runners stable under constrained process limits.
     fileParallelism: false,

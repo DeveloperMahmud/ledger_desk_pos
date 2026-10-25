@@ -55,6 +55,14 @@ export function AuthForm({ nextPath }: { nextPath?: string }) {
     router.refresh();
   }
 
+  async function resetPassword() {
+    const emailInput = document.querySelector<HTMLInputElement>('input[name="email"]');
+    const email = emailInput?.value.trim();
+    if (!configured || !email) { setError("Enter your email first, then choose reset password."); return; }
+    const { error: resetError } = await createSupabaseBrowserClient().auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/login` });
+    if (resetError) setError(resetError.message); else setMessage("Password reset link sent. Check your email.");
+  }
+
   return (
     <div className="grid min-h-screen bg-[#f5f7fa] lg:grid-cols-[1fr_480px]">
       <section className="relative hidden overflow-hidden bg-[#17263f] p-12 text-white lg:flex lg:flex-col lg:justify-between">
@@ -78,6 +86,7 @@ export function AuthForm({ nextPath }: { nextPath?: string }) {
             <button disabled={pending} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#246bfd] text-xs font-extrabold text-white shadow-lg shadow-blue-500/20 disabled:opacity-60">{pending ? <LoaderCircle size={16} className="animate-spin" /> : <ArrowRight size={16} />}{pending ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}</button>
           </form>
           <button onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(undefined); setMessage(undefined); }} className="mt-5 w-full text-center text-xs font-bold text-[#4d63a8]">{mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}</button>
+          {mode === "signin" && <button onClick={resetPassword} className="mt-3 w-full text-center text-xs font-semibold text-[#7b8596]">Forgot password?</button>}
           <Link href="/" className="mt-6 block text-center text-xs text-[#8993a1]">Continue in preview mode</Link>
         </div>
       </main>

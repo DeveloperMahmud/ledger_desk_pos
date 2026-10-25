@@ -1,17 +1,26 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, CalendarDays, CheckCircle2, CircleDollarSign, Clock3, Plus, Users } from "lucide-react";
-import { projects } from "@/lib/crm/demo-data";
+import { useEffect, useState } from "react";
+import { projects as previewProjects } from "@/lib/crm/demo-data";
+import { loadLiveProjects } from "@/lib/crm/repository";
+import type { Project } from "@/lib/crm/types";
 import { projectProgress } from "@/lib/crm/rules";
 import { formatMoney } from "@/lib/inventory/rules";
 import { cn } from "@/lib/utils";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 const statusStyle = { planning: "bg-sky-50 text-sky-700", active: "bg-emerald-50 text-emerald-700", review: "bg-violet-50 text-violet-700", completed: "bg-slate-100 text-slate-700", on_hold: "bg-amber-50 text-amber-700" };
 
 export function ProjectsDashboard() {
+  const [projects,setProjects]=useState<Project[]>(previewProjects);const [dataMode,setDataMode]=useState<"preview"|"loading"|"live"|"error">(isSupabaseConfigured()?"loading":"preview");const [error,setError]=useState("");
+  useEffect(()=>{if(!isSupabaseConfigured())return;let active=true;loadLiveProjects().then(rows=>{if(active){setProjects(rows);setDataMode("live");}}).catch(reason=>{if(active){setError(reason instanceof Error?reason.message:"Projects could not be loaded.");setDataMode("error");}});return()=>{active=false;};},[]);
   const active = projects.filter((project) => project.status !== "completed").length;
   const portfolio = projects.reduce((sum, project) => sum + project.budget, 0);
   return <div className="mx-auto max-w-[1450px] px-4 py-7 sm:px-7 lg:px-10 lg:py-9">
-    <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><p className="mb-1 text-xs font-semibold text-[#7a8495]">Client delivery</p><h1 className="heading text-2xl font-extrabold tracking-[-.03em] text-[#17263f] sm:text-[30px]">Projects</h1><p className="mt-1.5 text-sm text-[#7b8596]">Track every milestone, task, file and client revision.</p></div><button className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white"><Plus size={16} /> New project</button></header>
+    <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><p className="mb-1 text-xs font-semibold text-[#7a8495]">Client delivery</p><h1 className="heading text-2xl font-extrabold tracking-[-.03em] text-[#17263f] sm:text-[30px]">Projects</h1><p className="mt-1.5 text-sm text-[#7b8596]">Track every milestone, task, file and client revision. <span className="ml-1 text-[9px] font-extrabold uppercase">{dataMode}</span></p></div><Link href="/proposals" className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-extrabold text-white"><Plus size={16} /> Start from proposal</Link></header>
+    {error&&<p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{error}</p>}
     <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Metric icon={BriefcaseBusiness} label="Active projects" value={String(active)} detail="Planning through client review" tone="blue" /><Metric icon={CircleDollarSign} label="Portfolio value" value={formatMoney(portfolio)} detail="Across current projects" tone="violet" /><Metric icon={Clock3} label="Due this month" value="2" detail="Prioritize delivery and review" tone="amber" /><Metric icon={CheckCircle2} label="Tasks completed" value="40%" detail="Overall active workload" tone="green" /></section>
     <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{projects.map((project) => {
       const progress = projectProgress(project);

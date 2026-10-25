@@ -2,14 +2,14 @@
 
 ## Current milestone
 
-Release 1 application build - Phases 0 through 7 complete
+Release 1.1 future-ready application build - Phases 0 through 9 complete
 
 ## Completed scope
 
 - Product architecture, multi-sector workspace model and first-run owner setup.
 - Responsive application shell and role-ready workspace security foundation.
 - Inventory catalog, stock ledger, adjustments, low-stock visibility and label printing.
-- CRM leads, clients, contacts, service packages and lead conversion.
+- Live CRM leads/clients, audited lead creation/conversion, proposal drafts and accepted-proposal project conversion.
 - Proposal pipeline, accepted proposal conversion and project delivery workspace.
 - Invoice Studio for product, service and mixed invoices.
 - Modern, classic and minimal invoice templates with print/PDF output.
@@ -19,9 +19,12 @@ Release 1 application build - Phases 0 through 7 complete
 - Basic accounting plus optional full double-entry accounting on the same ledger.
 - Journal posting, reversals, accounting-period locks, trial balance and reporting foundation.
 - SMTP email templates, durable outbox and protected worker endpoint.
-- Brand, module, accounting-mode and communication settings.
-- JSON backup export and private attachment/storage policies.
-- Database migrations `001` through `010`, seed defaults, workspace-isolated RLS, concurrency-safe email delivery, atomic catalog creation and transactional invoice drafts.
+- Persistent brand, module, accounting-mode, invoice and communication settings.
+- Real RLS-scoped JSON workspace backup and private attachment/storage policies.
+- Team roles, secure invitation tokens, activity/audit screen, notifications foundation and password reset.
+- Live accounting transaction posting and live cross-module reports.
+- Branch, supplier, purchase order, stock transfer, BOM/production and recurring invoice database foundations.
+- Database migrations `001` through `012`, seed defaults, workspace-isolated RLS, concurrency-safe email delivery, atomic catalog/CRM/invoice operations and future-sector foundations.
 - Developer, deployment, Bangla user and QA handover documentation.
 - Supabase email/password sign-in/sign-up screen and authenticated live workspace setup adapter.
 - Configuration-aware Supabase session refresh and optimistic private-route protection using the Next.js 16 `proxy.ts` convention.
@@ -36,7 +39,7 @@ Release 1 application build - Phases 0 through 7 complete
 The code is complete without secrets. A real deployment still needs:
 
 - Supabase project URL, anon key and service-role key.
-- Applying migrations `001` through `010` to the selected Supabase project.
+- Applying migrations `001` through `012` to the selected Supabase project.
 - SMTP host, port, username, password, sender address and a generated email-worker secret.
 - GitHub repository and Vercel project access, plus an optional custom domain.
 - Final live checks for email delivery, Supabase Storage uploads and the available physical printers.
@@ -47,11 +50,13 @@ See `DEPLOYMENT_AND_SECRETS.md` for the exact final configuration sequence.
 
 - `npm run lint` - passed with no warnings.
 - `npm run typecheck` - passed.
-- `npm test` - 25 tests passed across 6 test files after release hardening.
-- `npm run build` - passed; 26 pages generated and all application/API routes compiled.
+- `npm run lint` - passed with no warnings.
+- `npm run typecheck` - passed with no TypeScript errors.
+- `npm test` - 25/25 tests passed across 6 files.
+- `npm run build` - passed; 28 static pages generated plus dynamic/API routes, including Team, Activity and Invitation.
 - Browser workflows verified: invoice template/quantity recalculation, full payment reconciliation, public invoice view, basic/full accounting mode and trial balance.
 - Browser console had no errors on the final tested route.
 
 ## Release boundary
 
-The current screens use typed demo data until Supabase credentials are connected. Live persistence, authentication, email delivery, hosted deployment and physical-printer certification are final environment operations, not unfinished feature phases.
+Without Supabase variables the app intentionally uses typed preview data. With variables configured, the core inventory, CRM, proposals, projects, invoices, accounting, reports, settings, team and activity screens use live RLS-scoped data. Email delivery, hosted deployment, storage upload UX and physical-printer certification remain environment/pilot operations.

@@ -10,7 +10,7 @@ Inventory follows a configuration-aware repository pattern: without environment 
 
 Invoicing uses the same preview/live boundary. `create_invoice_draft` and `update_invoice_draft` keep headers, line items, totals and sequence allocation transactional. Invoice issue, payment, public-link creation and email queuing stay behind trusted database functions. The public route calls the anon-safe hashed-token RPC and never receives creator IDs or payment-proof paths.
 
-LedgerDesk is a sector-aware business management application built with Next.js App Router, React, TypeScript, Tailwind CSS and Supabase/PostgreSQL. Inventory and invoicing automatically switch between typed preview data and live workspace repositories; the remaining modules stay preview-first until their repository adapters are connected. Database migrations define the production data model, RLS boundaries and transactional functions.
+LedgerDesk is a sector-aware business management application built with Next.js App Router, React, TypeScript, Tailwind CSS and Supabase/PostgreSQL. Inventory, CRM, proposals, projects, invoicing, accounting, reporting and workspace administration use configuration-aware repositories: typed preview data without secrets and RLS-scoped live data after setup. Database migrations define the production data model, authorization boundaries and transactional functions.
 
 ## Module boundaries
 
@@ -20,6 +20,8 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 - `lib/crm/`: leads, clients, proposals and project delivery rules.
 - `lib/invoicing/`: invoice totals, payments, public links and stock requirements.
 - `lib/accounting/`: basic/full accounting types and reporting calculations.
+- `lib/reporting/`: cross-module live dashboard/report snapshots.
+- `lib/workspace/`: settings, team, activity and portable backup adapters.
 - `lib/email/`: server-only SMTP adapter and outbox processor.
 - `lib/supabase/`: browser/client configuration boundary.
 - `supabase/migrations/`: ordered production schema, RLS and transaction functions.
@@ -33,7 +35,7 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 - `/clients`, `/proposals`, `/projects`, `/projects/[id]`
 - `/invoices`, `/invoices/new`, `/invoices/[id]`
 - `/public/invoice/[token]` secure client invoice view
-- `/accounting`, `/reports`, `/settings`
+- `/accounting`, `/reports`, `/settings`, `/team`, `/activity`, `/invite/[token]`
 - `POST /api/email/process` protected outbox worker
 
 ## Database migration order
@@ -44,6 +46,12 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 4. `202610240004_invoicing.sql`
 5. `202610240005_accounting_email.sql`
 6. `202610240006_defaults_storage.sql`
+7. `202610240007_email_worker_hardening.sql`
+8. `202610240008_inventory_atomic_create.sql`
+9. `202610240009_invoice_atomic_draft.sql`
+10. `202610240010_invoice_draft_update.sql`
+11. `202610250011_crm_operations.sql`
+12. `202610250012_team_notifications_future_modules.sql`
 
 Never expose `SUPABASE_SERVICE_ROLE_KEY` to client components. Every operational row contains `workspace_id`; RLS and composite workspace foreign keys are both required. Stock, invoice issue, payments, proposal conversion and journal posting must go through trusted database functions.
 
@@ -82,4 +90,13 @@ Vitest uses one worker to remain stable on constrained Windows/free-tier runners
 
 ## Adding future sectors
 
-Use workspace `module_flags` to expose features. New business data must include `workspace_id`, composite workspace relationships, RLS policies and audit logs. Manufacturing should add BOM, work orders and material consumption without replacing the stock ledger. Branches should add `branch_id` under the existing workspace boundary.
+Use workspace `module_flags` to expose features. New business data must include `workspace_id`, scoped relationships, RLS policies and audit logs. Migration 012 provides extension points for branches, suppliers, purchase orders, stock transfers, BOMs, production orders and recurring invoices. Production completion must append stock movements through trusted functions; it must never rewrite stock balances directly.
+
+## Extension checklist
+
+1. Add the schema in a new timestamped migration; never edit an applied migration.
+2. Add RLS before exposing the table to client code.
+3. Put multi-row or financial mutations in a `security definer` function with explicit authorization.
+4. Add a typed repository under `lib/<module>/repository.ts` and keep preview fallback in the component.
+5. Add deterministic domain tests, then run typecheck, tests, lint and production build.
+6. Update the Bangla user guide, migration list and implementation status.

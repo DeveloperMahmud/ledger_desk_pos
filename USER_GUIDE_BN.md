@@ -21,6 +21,7 @@
 - নিশ্চিত হলে Client করুন এবং Proposal তৈরি করুন।
 - Proposal accepted হলে Create project চাপুন।
 - Project-এর task, milestone, file/link ও revision একই জায়গায় রাখুন।
+- `Projects → project` খুলে নতুন task ও due date যোগ করুন।
 
 ## Invoice
 
@@ -48,5 +49,24 @@
 
 ## Backup
 
-- Settings → Security & backup থেকে JSON export নিন।
+- Settings → Security & backup থেকে full JSON export নিন। এতে আপনার access থাকা workspace table-গুলোর snapshot থাকবে।
 - Supabase dashboard থেকে নিয়মিত database backup/export রাখুন।
+
+## Team ও নিরাপত্তা
+
+- `Team` থেকে email ও role নির্বাচন করে invitation তৈরি করুন। Token কেবল বিশ্বাসযোগ্য ব্যক্তিকে আলাদাভাবে দিন; invited user sign-in করে `/invite/TOKEN` খুলে accept করবে।
+- Owner সবকিছু, Manager দৈনন্দিন পরিচালনা, Accountant হিসাব, Staff কাজের data, Viewer শুধু দেখা—এইভাবে role দিন।
+- `Activity` থেকে গুরুত্বপূর্ণ পরিবর্তনের audit history দেখুন।
+- Password ভুলে গেলে Login পেজে email লিখে `Forgot password?` চাপুন।
+
+## Settings সহজভাবে
+
+- `Business & brand`: নাম, ঠিকানা, ফোন, website, invoice footer, payment instruction, template ও brand color।
+- `Modules`: এখন দরকার নেই এমন feature off রাখুন। Basic/Full accounting এখান থেকে বদলানো যায়।
+- `Email templates`: invoice ও reminder-এর subject/body নিজের agency অনুযায়ী লিখুন।
+- `Security & backup`: configuration status দেখুন এবং JSON backup নিন।
+
+## ভবিষ্যতের business
+
+- Branch, Purchase, Supplier, Stock Transfer, Manufacturing/BOM এবং Recurring Invoice-এর database foundation প্রস্তুত আছে।
+- প্রয়োজন হলে Settings → Modules থেকে সংশ্লিষ্ট module চালু করুন। UI workflow পরের release-এ একই repository pattern-এ যোগ করা যাবে; পুরোনো inventory/invoice data বদলাতে হবে না।

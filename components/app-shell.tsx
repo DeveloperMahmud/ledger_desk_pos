@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   ChevronDown,
   CircleHelp,
+  History,
   FileText,
   FileSignature,
   LayoutDashboard,
@@ -17,6 +18,7 @@ import {
   Settings,
   Sparkles,
   Users,
+  UserRoundCog,
   WalletCards,
   X,
 } from "lucide-react";
@@ -32,6 +34,8 @@ const navigation = [
   { label: "Projects", icon: BriefcaseBusiness, href: "/projects" },
   { label: "Accounting", icon: WalletCards, href: "/accounting" },
   { label: "Reports", icon: BarChart3, href: "/reports" },
+  { label: "Team", icon: UserRoundCog, href: "/team" },
+  { label: "Activity", icon: History, href: "/activity" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

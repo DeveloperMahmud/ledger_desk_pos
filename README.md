@@ -8,7 +8,9 @@ A future-ready multi-sector business application focused on inventory, professio
 - Live-ready inventory catalog, atomic opening stock, audited stock adjustments and CSV export
 - Product, service and mixed Invoice Studio with modern, classic and minimal templates
 - Atomic invoice draft save/update, stock-aware issue, manual payments, secure client links and email queue
-- CRM, proposals, projects, basic/full accounting, reports and modular settings UI
+- Live CRM, proposals, project tasks, basic/full accounting, reports and persistent modular settings
+- Team roles, secure invitation tokens, audit activity, password reset and portable workspace backups
+- Future-ready branches, suppliers, purchasing, stock transfer, BOM/production and recurring invoice schema
 - Private attachment buckets, durable SMTP outbox and concurrency-safe email worker
 - Preview mode when Supabase variables are absent
 
@@ -49,4 +51,4 @@ npm test
 npm run build
 ```
 
-The current baseline passes all four commands with 25 automated domain tests.
+Run all four commands before each release; the handover document records the last verified result.
