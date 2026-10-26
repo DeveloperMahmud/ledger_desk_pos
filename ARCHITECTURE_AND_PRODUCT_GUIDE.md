@@ -528,6 +528,7 @@ Critical operations—stock movement, invoice issue, payment, journal posting, p
 
 ## Reference documents
 
+- `NEXT_DEVELOPMENT_PLAN.md` — approved next-development execution order, tasks and acceptance criteria
 - `README.md` — quick project introduction
 - `DEVELOPER_GUIDE.md` — current implementation conventions
 - `USER_GUIDE_BN.md` — end-user instructions

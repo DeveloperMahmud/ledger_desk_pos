@@ -38,6 +38,7 @@ Copy `.env.example` to `.env.local`, add your own values, and apply the SQL file
 See:
 
 - `ARCHITECTURE_AND_PRODUCT_GUIDE.md` — master architecture, diagrams and approved future plan
+- `NEXT_DEVELOPMENT_PLAN.md` — execution-ready backlog for the next development cycle
 - `DEPLOYMENT_AND_SECRETS.md`
 - `DEVELOPER_GUIDE.md`
 - `USER_GUIDE_BN.md`
