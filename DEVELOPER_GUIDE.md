@@ -1,5 +1,7 @@
 # Developer Guide
 
+For the full system diagrams, multi-tenant model, approved Money Tracker/Admin/backup architecture and documentation patch protocol, read `ARCHITECTURE_AND_PRODUCT_GUIDE.md` first.
+
 ## Product architecture
 
 Authentication uses the Supabase browser client at `/login`. The setup wizard remains available in preview mode without credentials; once configured, it verifies the signed-in user, calls `create_workspace_with_owner`, and persists workspace preferences under RLS.

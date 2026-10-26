@@ -37,6 +37,7 @@ Copy `.env.example` to `.env.local`, add your own values, and apply the SQL file
 
 See:
 
+- `ARCHITECTURE_AND_PRODUCT_GUIDE.md` — master architecture, diagrams and approved future plan
 - `DEPLOYMENT_AND_SECRETS.md`
 - `DEVELOPER_GUIDE.md`
 - `USER_GUIDE_BN.md`
