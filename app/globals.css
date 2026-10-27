@@ -13,6 +13,19 @@
   --amber: #d97706;
   --app-background: #f5f7fa;
   --app-text: #17263f;
+  --money-canvas: #f3f6fb;
+  --money-surface: #ffffff;
+  --money-surface-subtle: #f6f8fc;
+  --money-text: #18243a;
+  --money-muted: #718096;
+  --money-border: #e1e7ef;
+  --money-grid: #e6ebf2;
+  --money-track: #e9edf3;
+  --money-accent: var(--blue);
+  --money-positive: #19a974;
+  --money-negative: #e84b4b;
+  --money-warning: #e99a22;
+  --money-forecast: #7557d9;
 }
 
 * { box-sizing: border-box; }
@@ -30,6 +43,16 @@ html[data-theme="dark"] body { color-scheme: dark; }
 html[data-theme="dark"] .bg-white { background-color: #172033 !important; }
 html[data-theme="dark"] .border { border-color: #334155 !important; }
 html[data-theme="dark"] input, html[data-theme="dark"] select, html[data-theme="dark"] textarea { background-color: #111827; color: #e5e7eb; border-color: #475569; }
+html[data-theme="dark"] {
+  --money-canvas: #0b1220;
+  --money-surface: #141e30;
+  --money-surface-subtle: #101928;
+  --money-text: #edf3fb;
+  --money-muted: #96a4b8;
+  --money-border: #2b394e;
+  --money-grid: #29374b;
+  --money-track: #283548;
+}
 
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -60,6 +83,35 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .card-shadow { box-shadow: 0 8px 30px rgba(26, 39, 60, .06); }
+
+.money-page { color: var(--money-text); }
+.money-page-shell { border-radius: 1.75rem; background: linear-gradient(150deg, color-mix(in srgb, var(--money-accent) 8%, var(--money-surface)), var(--money-canvas) 34%); }
+.money-card { overflow: hidden; border: 1px solid var(--money-border); border-radius: 1.25rem; background: var(--money-surface); box-shadow: 0 12px 35px rgba(24, 36, 58, .055); }
+.money-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.15rem 1.25rem; border-bottom: 1px solid var(--money-border); }
+.money-card-header h2 { font-size: .9rem; line-height: 1.3; font-weight: 800; }
+.money-card-header p:not(.money-eyebrow) { margin-top: .3rem; color: var(--money-muted); font-size: .68rem; line-height: 1.5; }
+.money-card-body { padding: 1.25rem; }
+.money-eyebrow { margin-bottom: .35rem; color: var(--money-accent); font-size: .58rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.money-icon-chip { display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; place-items: center; border-radius: .75rem; }
+.money-chart-row { display: flex; width: 100%; min-height: 3rem; align-items: center; gap: .7rem; border-radius: .85rem; padding: .35rem .5rem; color: var(--money-text); transition: background-color .18s ease; }
+.money-chart-row:hover { background: var(--money-surface-subtle); }
+.money-chart-row b,.money-chart-row strong { font-size: .7rem; }
+.money-chart-row small { color: var(--money-muted); font-size: .58rem; }
+.money-chart-scroll { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--money-border) transparent; }
+.money-segmented { display: flex; min-width: max-content; gap: .25rem; border: 1px solid var(--money-border); border-radius: .9rem; background: var(--money-surface-subtle); padding: .25rem; }
+.money-segmented button { min-width: 3.1rem; border-radius: .65rem; padding: .58rem .7rem; color: var(--money-muted); font-size: .64rem; font-weight: 800; transition: .18s ease; }
+.money-segmented button[aria-pressed="true"] { background: var(--money-accent); color: #fff; box-shadow: 0 5px 15px color-mix(in srgb, var(--money-accent) 24%, transparent); }
+.money-segmented-compact button { min-width: 2.65rem; padding: .45rem .55rem; }
+.money-compare { display: inline-flex; align-items: center; gap: .3rem; border-radius: 999px; padding: .3rem .5rem; font-size: .58rem; font-weight: 800; }
+.money-compare.positive { background: color-mix(in srgb, var(--money-positive) 12%, transparent); color: var(--money-positive); }
+.money-compare.negative { background: color-mix(in srgb, var(--money-negative) 12%, transparent); color: var(--money-negative); }
+.money-compare.neutral { background: var(--money-surface-subtle); color: var(--money-muted); }
+.money-bottom-nav { padding-bottom: max(.6rem, env(safe-area-inset-bottom)); }
+
+@media (max-width: 767px) {
+  .money-card-header,.money-card-body { padding: 1rem; }
+  .money-page-shell { border-radius: 1.25rem; }
+}
 
 @media print {
   .no-print { display: none !important; }

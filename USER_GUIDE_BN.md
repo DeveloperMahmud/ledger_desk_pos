@@ -41,6 +41,17 @@
 - দুই mode একই হিসাব ব্যবহার করে; mode বদলালে amount বদলাবে না।
 - Posted ভুল entry delete/edit না করে reversal দিন।
 
+## Money Tracker
+
+- `Money Tracker` খুলে উপরের Book selector থেকে Personal, Freelancing বা অন্য money book বেছে নিন।
+- `Add transaction` অথবা mobile-এর মাঝের `+` দিয়ে Income, Expense বা Transfer লিখুন; চাইলে receipt image/PDF দিন।
+- Overview-এর `7D`, `30D`, `12W`, `6M`, `1Y`, `All` দিয়ে সময় বদলান। Balance সব সময় বর্তমান ledger থেকে আসে; income/expense নির্বাচিত সময়ের।
+- Donut chart-এর category বা category list চাপলে সেই category-র filtered transaction list খুলবে।
+- `Reports` থেকে Overview, Cash flow, Spending, Forecast ও exact Table view দেখুন।
+- Report period বেছে `Filtered CSV` বা `Filtered XLSX` নিলে শুধু ওই সময়ের record export হবে।
+- `Planning` থেকে budget, savings goal ও recurring payment তৈরি করুন। Forecast projected; এটি confirmed bank balance নয়।
+- Transfer income বা expense total বাড়ায় না; এটি শুধু দুই account-এর balance পরিবর্তন করে।
+
 ## Email
 
 - Settings → Email templates থেকে invoice ও reminder message দেখুন।

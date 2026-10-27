@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-Release 1.3 completion-hardening candidate — approved code scope implemented; live Supabase acceptance remains configuration-dependent
+Release 1.4 Money experience candidate — approved Money dashboard/chart/mobile UX implemented; live Supabase acceptance remains configuration-dependent
 
 ## Completed scope
 
@@ -44,6 +44,9 @@ Release 1.3 completion-hardening candidate — approved code scope implemented; 
 - Money history search/filter, audited reversal, receipt access/delete, archive/reactivate controls, goal contributions and due recurring actions.
 - Server-protected `/admin`, customer search/status/export, runtime light/dark/system controls and WCAG contrast feedback.
 - Backup format v3 with SHA-256 checksum, restore preview, broader private-file restore and deferred relationship remapping.
+- Original responsive Money design system with semantic light/dark tokens, coloured account/category icons and mobile bottom navigation.
+- Financial-pulse overview, reusable donut/radial/bar/line/forecast visuals, URL-backed report periods and chart-to-transaction drill-down.
+- Mobile transaction cards and bottom-sheet entry forms, plus filtered CSV/XLSX exports from the selected report period.
 
 ## External configuration pending
 
@@ -63,11 +66,11 @@ See `DEPLOYMENT_AND_SECRETS.md` for the exact final configuration sequence.
 - `npm run typecheck` - passed.
 - `npm run lint` - passed with no warnings.
 - `npm run typecheck` - passed with no TypeScript errors.
-- `npm test -- --run` - 32/32 tests passed across 8 files.
+- `npm test` - 36/36 tests passed across 9 files.
 - `npm run build` - passed; 41 pages generated plus protected dynamic/API routes.
 - `npm audit --omit=dev` - passed with 0 vulnerabilities.
-- Browser workflows verified: invoice template/quantity recalculation, full payment reconciliation, public invoice view, basic/full accounting mode and trial balance.
-- Browser console had no errors on the final tested route.
+- Browser workflows verified: Money overview, 12-week reports, forecast tab and mobile quick-entry/receipt flow, in addition to prior invoice/accounting checks.
+- Desktop and 390×844 mobile Money layouts were visually inspected; browser console had no errors on the tested routes.
 
 ## Release boundary
 

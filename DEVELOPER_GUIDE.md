@@ -23,6 +23,9 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 - `lib/invoicing/`: invoice totals, payments, public links and stock requirements.
 - `lib/accounting/`: basic/full accounting types and reporting calculations.
 - `lib/money/`: separate Money Tracker ledger, balance rules, repositories and CSV/XLSX exchange.
+- `lib/money/insights.ts`: deterministic range filtering, chart series, category distribution and period comparison logic.
+- `components/money/money-charts.tsx`: dependency-free reusable SVG chart primitives and report controls.
+- `components/money/money-overview.tsx` and `money-report-visuals.tsx`: responsive overview/report composition; chart clicks drill into filtered transactions.
 - `lib/reporting/`: cross-module live dashboard/report snapshots.
 - `lib/workspace/`: settings, team, activity and portable backup adapters.
 - `lib/email/`: server-only SMTP adapter and outbox processor.
@@ -68,6 +71,8 @@ Never expose `SUPABASE_SERVICE_ROLE_KEY` to client components. Every operational
 ## Money Tracker boundary
 
 Money Tracker is intentionally separate from business accounting. `money_books` own accounts, categories, transactions, transfer groups, budgets, goals, recurring plans and attachments. Transfers are created atomically as linked out/in rows and never inflate income or expense reports. Provider fields (`source`, `external_id`, `import_batch_id`, `import_hash`) are extension points only; no banking API is connected.
+
+Money charts do not depend on a hosted or paid service. `insights.ts` produces canonical display series while `money-charts.tsx` renders accessible SVG/CSS visuals. Report range is stored in the URL (`?range=12w`); clicking a category navigates to `/money/transactions?category=...`. Exact-value tables remain available beside visual reports. Add chart logic tests whenever range boundaries, transfers or aggregation behaviour changes.
 
 CSV/XLSX exchange runs in the browser and validates a whole batch before its atomic RPC. Full backups use JSON v3 with a SHA-256 checksum and optionally package private files in ZIP. Restore previews counts, validates integrity, creates a new workspace and remaps IDs in dependency order; it never overwrites the active workspace.
 

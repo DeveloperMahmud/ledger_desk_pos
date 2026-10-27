@@ -214,10 +214,10 @@ Hard-coded UI colors ধাপে ধাপে semantic CSS variables-এ নি
 | Reports | ✅ | Cross-module live report snapshot |
 | Team and audit | ✅ | Membership roles, invitations, activity foundation |
 | Branch/purchase/manufacturing | 🟡 | Database foundation exists; complete operational UI pending |
-| Restorable workspace import | 🔵 | Approved architecture; not implemented |
-| Platform Super Admin | 🔵 | Approved architecture; not implemented |
-| Runtime global theme editor | 🔵 | Approved architecture; not implemented |
-| Money Tracker | 🔵 | Approved architecture; not implemented |
+| Restorable workspace import | ✅ | Versioned JSON/ZIP preview, checksum, ID remapping and new-workspace restore |
+| Platform Super Admin | ✅ | Server-authorized customer provisioning, status and export |
+| Runtime global theme editor | ✅ | App identity, asset and semantic runtime theme controls |
+| Money Tracker | ✅ | Books, manual ledger, planning, visual dashboard, charts, reports and exchange |
 
 ## 9. Invoice client creation improvement — planned 🔵
 
@@ -246,7 +246,7 @@ Minimum client fields:
 
 CRM-তেও direct `New Client` action থাকবে; lead conversion একমাত্র পথ হবে না।
 
-## 10. Money Tracker architecture — planned 🔵
+## 10. Money Tracker architecture — implemented ✅
 
 এই module business accounting থেকে আলাদা হবে, কিন্তু approved transaction চাইলে পরে accounting-এ post করা যাবে। কোনো direct bank, bKash বা Nagad integration Release 1-এ থাকবে না।
 
@@ -301,15 +301,15 @@ Transfer একটি linked pair/transfer group হবে এবং income/expe
 
 `source`, `external_id` এবং `import_hash` future provider integration ও duplicate prevention-এর extension point। এখন কোনো provider credential বা sync worker থাকবে না।
 
-### Money Tracker roadmap
+### Money Tracker roadmap and delivery state
 
-1. Accounts, categories এবং manual transactions
-2. Transfer, balances, filter/search এবং cash-flow dashboard
-3. CSV/XLSX export এবং JSON backup
-4. Import mapping, preview, duplicate detection এবং rollback
-5. Budgets, goals, recurring/planned transactions
-6. Sharing, reconciliation, split transactions এবং automation rules
-7. Optional provider adapter and accounting bridge
+1. ✅ Accounts, categories এবং manual transactions
+2. ✅ Transfer, reproducible balances, filter/search এবং visual cash-flow dashboard
+3. ✅ CSV/XLSX export এবং JSON/ZIP backup
+4. ✅ Import mapping, preview, duplicate detection এবং rollback
+5. ✅ Budgets, goals, recurring/planned transactions
+6. 🟡 Sharing foundation আছে; reconciliation, split transactions এবং automation rules future
+7. 🟡 Provider extension fields আছে; provider adapter এবং accounting bridge future
 
 ## 11. Export and restorable import architecture — planned 🔵
 
@@ -527,6 +527,7 @@ Critical operations—stock movement, invoice issue, payment, journal posting, p
 | Date | Change | Status |
 |---|---|---|
 | 2026-10-27 | Master architecture guide created; invoice client UX, Money Tracker, Platform Admin, global branding and restorable workspace backup plans recorded | Planned |
+| 2026-10-27 | Money reference screenshots converted into an original responsive design system; dashboard pulse, reusable SVG charts, range/report views, mobile navigation/cards and forecast delivered | Implemented |
 
 ## Reference documents
 
@@ -534,6 +535,7 @@ Critical operations—stock movement, invoice issue, payment, journal posting, p
 - `README.md` — quick project introduction
 - `DEVELOPER_GUIDE.md` — current implementation conventions
 - `USER_GUIDE_BN.md` — end-user instructions
+- `MONEY_UI_UX_SPEC.md` — approved screenshot findings, Money dashboard/chart catalogue, interaction and accessibility rules
 - `IMPLEMENTATION_STATUS.md` — release status and verification
 - `DEPLOYMENT_AND_SECRETS.md` — environment and deployment
 - `supabase/README.md` — database migration order
