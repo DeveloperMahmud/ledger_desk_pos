@@ -20,9 +20,11 @@ import {
   Users,
   UserRoundCog,
   WalletCards,
+  PiggyBank,
+  ShieldCheck,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -33,17 +35,23 @@ const navigation = [
   { label: "Proposals", icon: FileSignature, href: "/proposals" },
   { label: "Projects", icon: BriefcaseBusiness, href: "/projects" },
   { label: "Accounting", icon: WalletCards, href: "/accounting" },
+  { label: "Money Tracker", icon: PiggyBank, href: "/money" },
   { label: "Reports", icon: BarChart3, href: "/reports" },
   { label: "Team", icon: UserRoundCog, href: "/team" },
   { label: "Activity", icon: History, href: "/activity" },
+  { label: "Platform Admin", icon: ShieldCheck, href: "/platform-admin" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [brand,setBrand]=useState({appName:"LedgerDesk",tagline:"Business OS",logoUrl:""});
+  const [platformAdmin,setPlatformAdmin]=useState(false);
   const pathname = usePathname();
-  const searchResults = navigation.filter((item) => item.label.toLowerCase().includes(search.trim().toLowerCase()));
+  const availableNavigation=navigation.filter(item=>item.label!=="Platform Admin"||platformAdmin);
+  const searchResults = availableNavigation.filter((item) => item.label.toLowerCase().includes(search.trim().toLowerCase()));
+  useEffect(()=>{const update=(event:Event)=>{const detail=(event as CustomEvent).detail;if(detail)setBrand({appName:detail.appName,tagline:detail.tagline,logoUrl:detail.logoUrl})};window.addEventListener("ledgerdesk-branding-ready",update);fetch("/api/platform/branding").then(r=>r.ok?r.json():null).then(data=>data&&setBrand({appName:data.appName,tagline:data.tagline,logoUrl:data.logoUrl})).catch(()=>{});fetch("/api/platform/access").then(r=>r.ok?r.json():null).then(data=>setPlatformAdmin(Boolean(data?.isPlatformAdmin))).catch(()=>{});return()=>window.removeEventListener("ledgerdesk-branding-ready",update)},[]);
 
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
@@ -58,18 +66,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 flex w-[264px] flex-col border-r border-white/8 bg-[#17263f] text-white transition-transform lg:sticky lg:translate-x-0",
+            "fixed inset-y-0 left-0 z-40 flex w-[264px] flex-col border-r border-white/8 bg-[var(--navy)] text-white transition-transform lg:sticky lg:translate-x-0",
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex h-20 items-center justify-between px-6">
             <Link href="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-              <span className="grid size-10 place-items-center rounded-xl bg-[#6d8dff] shadow-lg shadow-blue-950/30">
-                <Sparkles size={20} strokeWidth={2.5} />
-              </span>
+              <span className="grid size-10 place-items-center overflow-hidden rounded-xl bg-[var(--blue)] bg-cover bg-center shadow-lg shadow-blue-950/30" style={brand.logoUrl?{backgroundImage:`url(${brand.logoUrl})`}:undefined}>{!brand.logoUrl&&<Sparkles size={20} strokeWidth={2.5} />}</span>
               <span>
-                <span className="heading block text-[17px] font-extrabold tracking-tight">LedgerDesk</span>
-                <span className="block text-[10px] font-semibold uppercase tracking-[.18em] text-slate-400">Business OS</span>
+                <span className="heading block text-[17px] font-extrabold tracking-tight">{brand.appName}</span>
+                <span className="block text-[10px] font-semibold uppercase tracking-[.18em] text-slate-400">{brand.tagline}</span>
               </span>
             </Link>
             <button className="rounded-lg p-2 text-slate-400 lg:hidden" onClick={() => setOpen(false)}>
@@ -90,7 +96,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <nav className="flex-1 space-y-1 px-3">
             <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Workspace</p>
-            {navigation.map((item) => {
+            {availableNavigation.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
               return (
               <Link
@@ -158,7 +164,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link href="/setup" className="hidden rounded-xl border border-[#dfe3e9] px-4 py-2.5 text-xs font-bold text-[#324258] transition hover:bg-[#f6f7f9] sm:inline-flex">
                 Workspace setup
               </Link>
-              <Link href="/invoices/new" className="inline-flex items-center gap-2 rounded-xl bg-[#246bfd] px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-500/20 transition hover:bg-[#195ee8]">
+              <Link href="/invoices/new" className="inline-flex items-center gap-2 rounded-xl bg-[var(--blue)] px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-500/20 transition brightness-100 hover:brightness-90">
                 <PackagePlus size={16} /> <span className="hidden sm:inline">New invoice</span>
               </Link>
             </div>

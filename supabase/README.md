@@ -16,6 +16,9 @@ This directory contains the complete Release 1 backend definition. Apply the mig
 10. `202610240010_invoice_draft_update.sql` - atomic editing and recalculation of existing draft invoices.
 11. `202610250011_crm_operations.sql` - audited CRM lead operations and atomic proposal drafts/status changes.
 12. `202610250012_team_notifications_future_modules.sql` - secure invitations, notifications, branches, purchasing, transfers, manufacturing and recurring billing foundations.
+13. `202610270013_direct_clients.sql` - audited direct client creation/editing and normalized duplicate protection.
+14. `202610270014_money_tracker.sql` - isolated money books, accounts, categories, transfers, planning, imports and receipts.
+15. `202610270015_platform_branding_backup.sql` - global product appearance and backup-operation audit records.
 
 ## Security model
 

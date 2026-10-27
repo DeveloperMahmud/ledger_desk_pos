@@ -1,0 +1,8 @@
+import {NextResponse} from "next/server";
+import {z} from "zod";
+import {createClient} from "@supabase/supabase-js";
+import {requirePlatformAdmin} from "@/lib/supabase/server";
+const defaults={appName:"LedgerDesk",tagline:"Business OS",logoUrl:"",faviconUrl:"",primaryColor:"#246BFD",accentColor:"#17263F",canvasColor:"#F5F7FA"};
+const schema=z.object({appName:z.string().min(2).max(60),tagline:z.string().max(100),logoUrl:z.union([z.url(),z.literal("")]),faviconUrl:z.union([z.url(),z.literal("")]),primaryColor:z.string().regex(/^#[0-9A-Fa-f]{6}$/),accentColor:z.string().regex(/^#[0-9A-Fa-f]{6}$/),canvasColor:z.string().regex(/^#[0-9A-Fa-f]{6}$/)});
+export async function GET(){try{const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;if(!url||!key)return NextResponse.json(defaults);const db=createClient(url,key,{auth:{persistSession:false}});const {data,error}=await db.rpc("get_platform_branding");if(error)throw error;return NextResponse.json(data||defaults);}catch{return NextResponse.json(defaults);}}
+export async function PUT(request:Request){try{const {user,admin}=await requirePlatformAdmin();const input=schema.parse(await request.json());const {error}=await admin.from("platform_settings").update({app_name:input.appName,app_tagline:input.tagline,logo_url:input.logoUrl||null,favicon_url:input.faviconUrl||null,primary_color:input.primaryColor,accent_color:input.accentColor,canvas_color:input.canvasColor,updated_by:user.id,updated_at:new Date().toISOString()}).eq("singleton",true);if(error)throw error;return NextResponse.json(input);}catch(cause){const error=cause as Error&{status?:number};return NextResponse.json({error:error.message},{status:error.status||400});}}

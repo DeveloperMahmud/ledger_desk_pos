@@ -27,6 +27,21 @@ export interface Client {
   lifetimeValue: number;
   status: "active" | "inactive";
   joinedAt: string;
+  clientType?: "individual" | "company";
+  billingAddress?: string;
+  defaultCurrency?: string;
+  paymentTermsDays?: number;
+}
+
+export interface ClientInput {
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  clientType: "individual" | "company";
+  billingAddress: string;
+  defaultCurrency: string;
+  paymentTermsDays: number;
 }
 
 export interface ProposalItem {

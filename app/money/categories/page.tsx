@@ -1,0 +1,1 @@
+import {AppShell} from "@/components/app-shell";import {MoneyDashboard} from "@/components/money/money-dashboard";export default function CategoriesPage(){return <AppShell><MoneyDashboard section="categories"/></AppShell>}

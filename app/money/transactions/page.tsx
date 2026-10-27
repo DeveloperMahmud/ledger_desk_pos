@@ -1,0 +1,1 @@
+import {AppShell} from "@/components/app-shell";import {MoneyDashboard} from "@/components/money/money-dashboard";export default function TransactionsPage(){return <AppShell><MoneyDashboard section="transactions"/></AppShell>}

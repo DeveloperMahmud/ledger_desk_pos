@@ -1,0 +1,11 @@
+export type MoneyBookType="personal"|"family"|"freelancing"|"agency"|"custom";
+export type TrackerAccountType="cash"|"bank"|"bkash"|"nagad"|"rocket"|"online_bank"|"savings"|"credit_card"|"loan"|"investment"|"custom";
+export type TrackerEntryType="income"|"expense"|"transfer";
+export interface MoneyBook{id:string;name:string;type:MoneyBookType;currency:string;active:boolean}
+export interface TrackerAccount{id:string;bookId:string;name:string;type:TrackerAccountType;currency:string;openingBalance:number;balance:number;color:string;includeInTotal:boolean;active:boolean}
+export interface TrackerCategory{id:string;bookId:string;parentId?:string;type:"income"|"expense";name:string;color:string;active:boolean}
+export interface TrackerTransaction{id:string;bookId:string;accountId:string;categoryId?:string;type:TrackerEntryType;transferDirection?:"in"|"out";transferGroupId?:string;amount:number;currency:string;occurredAt:string;status:"pending"|"cleared";payee?:string;note?:string;tags:string[];reference?:string;source:"manual"|"csv"|"xlsx"|"provider"}
+export interface TrackerBudget{id:string;categoryId:string;period:"weekly"|"monthly"|"yearly";amount:number;startsOn:string;active:boolean}
+export interface TrackerGoal{id:string;name:string;targetAmount:number;currentAmount:number;targetDate?:string;color:string}
+export interface TrackerRecurring{id:string;bookId:string;accountId:string;categoryId?:string;type:"income"|"expense";amount:number;frequency:"weekly"|"monthly"|"quarterly"|"yearly";nextRunOn:string;payee?:string;active:boolean}
+export interface MoneySnapshot{books:MoneyBook[];accounts:TrackerAccount[];categories:TrackerCategory[];transactions:TrackerTransaction[];budgets:TrackerBudget[];goals:TrackerGoal[];recurring:TrackerRecurring[]}

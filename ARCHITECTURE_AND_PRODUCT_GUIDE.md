@@ -1,5 +1,7 @@
 # LedgerDesk Architecture & Product Guide
 
+> **Implementation update — 27 October 2026:** Direct client creation, Money Tracker, budgets/goals/recurring plans/receipts, CSV/XLSX exchange, Platform Super Admin provisioning, runtime application branding and versioned JSON/ZIP new-workspace restore are implemented in migrations `013`–`015` and the routes documented in `DEVELOPER_GUIDE.md`. Future patches must update this guide and `IMPLEMENTATION_STATUS.md` together.
+
 > **Living document:** এই file LedgerDesk-এর architecture, database design, security boundary, completed features এবং planned development-এর master reference। ভবিষ্যতে architecture, database, route, permission, import/export format বা major feature patch করলে একই commit-এ এই guide update করতে হবে।
 
 **Last reviewed:** 27 October 2026  

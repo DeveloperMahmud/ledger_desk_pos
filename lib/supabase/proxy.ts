@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicPrefixes = ["/login", "/public/", "/api/email/process", "/manifest.webmanifest"];
+const publicPrefixes = ["/login", "/public/", "/api/email/process", "/api/platform/branding", "/manifest.webmanifest"];
 
 export async function refreshSupabaseSession(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

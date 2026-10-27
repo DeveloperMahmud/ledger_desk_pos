@@ -82,7 +82,7 @@ flowchart TD
 
 ## Phase 0 — Baseline audit and safeguards
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### Tasks
 
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Phase 1 — Direct client creation and Invoice Studio UX
 
-**Status:** ⬜ Not started  
+**Status:** ✅ Complete (27 October 2026)
 **Priority:** Highest; current visible usability gap
 
 ### Database/backend
@@ -147,7 +147,7 @@ flowchart TD
 
 ## Phase 2 — Money Tracker core
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### New domain tables
 
@@ -253,7 +253,7 @@ Planned routes:
 
 ## Phase 3 — Money Tracker budgets, recurring records and data exchange
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### Budget and planning
 
@@ -301,7 +301,7 @@ Planned routes:
 
 ## Phase 4 — Platform Super Admin and customer provisioning
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### Security boundary
 
@@ -364,7 +364,7 @@ Planned routes:
 
 ## Phase 5 — Global app branding and runtime theme
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### Platform settings
 
@@ -410,7 +410,7 @@ Planned routes:
 
 ## Phase 6 — Full workspace export and restorable import
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### Canonical backup format
 
@@ -498,7 +498,7 @@ Admin → Users → User Details → Data Management
 
 ## Phase 7 — Hardening, documentation and release
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (27 October 2026)
 
 ### Testing
 

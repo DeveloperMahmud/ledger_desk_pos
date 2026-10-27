@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-Release 1.1 future-ready application build - Phases 0 through 9 complete
+Release 1.2 multi-tenant money, client and platform administration build — all approved next-development phases complete
 
 ## Completed scope
 
@@ -33,13 +33,20 @@ Release 1.1 future-ready application build - Phases 0 through 9 complete
 - Atomic email outbox claims, capped exponential retries and stale-worker recovery.
 - Configuration-aware live inventory loading, transactional product/service creation, audited stock adjustment and CSV export with preview fallback.
 - Configuration-aware live invoice list/editor/viewer, client/catalog selection, atomic draft updates, stock-aware issue, audited payments, secure public links and durable email queue.
+- Direct CRM client creation/edit lifecycle with individual/company profiles, optional contact fields, normalized duplicate protection and inline Invoice Studio creation.
+- Workspace-isolated Money Tracker with books, cash/bank/mobile-wallet accounts, custom categories, income, expense, atomic transfer pairs and reproducible balances.
+- Money budgets, savings goals, recurring plans, receipt attachments, CSV/XLSX import preview and CSV/XLSX exports.
+- Platform Super Admin customer provisioning, suspension/reactivation and server-only Supabase Auth administration.
+- Runtime global application name, logo, favicon and theme settings, kept separate from workspace invoice branding.
+- Versioned JSON and ZIP workspace backups plus safe restore into a new workspace with foreign-key ID remapping.
+- Database migrations `013` through `015` for direct clients, Money Tracker, platform branding and backup audit foundations.
 
 ## External configuration pending
 
 The code is complete without secrets. A real deployment still needs:
 
 - Supabase project URL, anon key and service-role key.
-- Applying migrations `001` through `012` to the selected Supabase project.
+- Applying migrations `001` through `015` to the selected Supabase project.
 - SMTP host, port, username, password, sender address and a generated email-worker secret.
 - GitHub repository and Vercel project access, plus an optional custom domain.
 - Final live checks for email delivery, Supabase Storage uploads and the available physical printers.
@@ -52,11 +59,12 @@ See `DEPLOYMENT_AND_SECRETS.md` for the exact final configuration sequence.
 - `npm run typecheck` - passed.
 - `npm run lint` - passed with no warnings.
 - `npm run typecheck` - passed with no TypeScript errors.
-- `npm test` - 25/25 tests passed across 6 files.
-- `npm run build` - passed; 28 static pages generated plus dynamic/API routes, including Team, Activity and Invitation.
+- `npm test` - 29/29 tests passed across 7 files.
+- `npm run build` - passed; 39 pages generated plus protected dynamic/API routes.
+- `npm audit --omit=dev` - passed with 0 vulnerabilities.
 - Browser workflows verified: invoice template/quantity recalculation, full payment reconciliation, public invoice view, basic/full accounting mode and trial balance.
 - Browser console had no errors on the final tested route.
 
 ## Release boundary
 
-Without Supabase variables the app intentionally uses typed preview data. With variables configured, the core inventory, CRM, proposals, projects, invoices, accounting, reports, settings, team and activity screens use live RLS-scoped data. Email delivery, hosted deployment, storage upload UX and physical-printer certification remain environment/pilot operations.
+Without Supabase variables the app intentionally uses typed preview data. With variables configured and migrations applied, inventory, CRM, invoicing, Money Tracker, accounting, reports, settings, team and activity use live RLS-scoped data. Platform provisioning and workspace restore additionally require the server-only service-role key. Email delivery, hosted deployment and physical-printer certification remain environment/pilot operations.

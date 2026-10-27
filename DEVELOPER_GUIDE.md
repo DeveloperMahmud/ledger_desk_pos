@@ -22,6 +22,7 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 - `lib/crm/`: leads, clients, proposals and project delivery rules.
 - `lib/invoicing/`: invoice totals, payments, public links and stock requirements.
 - `lib/accounting/`: basic/full accounting types and reporting calculations.
+- `lib/money/`: separate Money Tracker ledger, balance rules, repositories and CSV/XLSX exchange.
 - `lib/reporting/`: cross-module live dashboard/report snapshots.
 - `lib/workspace/`: settings, team, activity and portable backup adapters.
 - `lib/email/`: server-only SMTP adapter and outbox processor.
@@ -38,7 +39,10 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 - `/invoices`, `/invoices/new`, `/invoices/[id]`
 - `/public/invoice/[token]` secure client invoice view
 - `/accounting`, `/reports`, `/settings`, `/team`, `/activity`, `/invite/[token]`
+- `/money`, `/money/accounts`, `/money/transactions`, `/money/categories`, `/money/reports`, `/money/planning`
+- `/platform-admin` for verified platform administrators only
 - `POST /api/email/process` protected outbox worker
+- `/api/platform/*` server-checked platform operations and `/api/workspace/restore` safe new-workspace restore
 
 ## Database migration order
 
@@ -54,8 +58,21 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 10. `202610240010_invoice_draft_update.sql`
 11. `202610250011_crm_operations.sql`
 12. `202610250012_team_notifications_future_modules.sql`
+13. `202610270013_direct_clients.sql`
+14. `202610270014_money_tracker.sql`
+15. `202610270015_platform_branding_backup.sql`
 
 Never expose `SUPABASE_SERVICE_ROLE_KEY` to client components. Every operational row contains `workspace_id`; RLS and composite workspace foreign keys are both required. Stock, invoice issue, payments, proposal conversion and journal posting must go through trusted database functions.
+
+## Money Tracker boundary
+
+Money Tracker is intentionally separate from business accounting. `money_books` own accounts, categories, transactions, transfer groups, budgets, goals, recurring plans and attachments. Transfers are created atomically as linked out/in rows and never inflate income or expense reports. Provider fields (`source`, `external_id`, `import_batch_id`, `import_hash`) are extension points only; no banking API is connected.
+
+CSV/XLSX exchange runs in the browser with an open-source ZIP/XML implementation. Full backups use versioned JSON as canonical data and optionally package receipt files in ZIP. Restore creates a new workspace and remaps record IDs; it never overwrites the active workspace.
+
+## Platform administration
+
+Platform admin authorization is checked against `platform_admins` on every server route. Auth user creation uses `SUPABASE_SERVICE_ROLE_KEY` only in `lib/supabase/server.ts`. If that secret is missing, the UI stays readable and reports that configuration is required. Global `platform_settings` control the application identity; `workspace_settings` continue to control individual business/invoice branding.
 
 ## Accounting design
 

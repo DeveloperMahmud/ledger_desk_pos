@@ -11,6 +11,7 @@ import { issueLiveInvoice, loadInvoiceEditorOptions, saveLiveInvoiceDraft, type 
 import { formatMoney } from "@/lib/inventory/rules";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { cn } from "@/lib/utils";
+import { ClientFormModal } from "@/components/crm/client-form-modal";
 
 const baseInvoice: Invoice = {
   id: "draft-preview", number: "Next invoice number", clientId: "client-bright", clientName: "Bright Dental", clientEmail: "accounts@bright.example", status: "draft", template: "modern", currency: "BDT", issueDate: "2026-10-24", dueDate: "2026-11-07", title: "Website and creative services", terms: "Payment due within 14 days.", payments: [],
@@ -31,6 +32,8 @@ export function InvoiceStudio() {
   const [dataMode, setDataMode] = useState<"preview" | "loading" | "live" | "error">(isSupabaseConfigured() ? "loading" : "preview");
   const [actionError, setActionError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [clientSearch,setClientSearch]=useState("");
+  const [addingClient,setAddingClient]=useState(false);
   const totals = useMemo(() => invoiceTotals(invoice), [invoice]);
 
   useEffect(() => {
@@ -92,7 +95,7 @@ export function InvoiceStudio() {
     {preview ? <div className="p-4 py-8"><InvoiceDocument invoice={invoice} /></div> : <div className="mx-auto grid max-w-[1550px] gap-5 p-4 lg:grid-cols-[1fr_360px] lg:p-7">
       <main className="space-y-5">
         <section className="card-shadow rounded-2xl border border-[#e2e6ec] bg-white p-5"><h2 className="text-sm font-extrabold text-[#2c3a50]">Invoice details</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <Field label="Client"><select className="input" value={invoice.clientId} onChange={(event) => selectClient(event.target.value)}>{dataMode === "live" ? clients.map((client) => <option key={client.id} value={client.id}>{client.name}</option>) : <><option value="client-bright">Bright Dental</option><option value="client-kite">Kite Logistics</option><option value="client-mango">Mango Home</option></>}</select></Field>
+          <Field label="Client"><div className="flex gap-2"><div className="min-w-0 flex-1"><input aria-label="Search clients" className="input mb-2" placeholder="Search client..." value={clientSearch} onChange={event=>setClientSearch(event.target.value)}/><select className="input" value={invoice.clientId} onChange={(event) => selectClient(event.target.value)}><option value="">Select a client</option>{dataMode === "live" ? clients.filter(client=>`${client.name} ${client.email}`.toLowerCase().includes(clientSearch.toLowerCase())).map((client) => <option key={client.id} value={client.id}>{client.name}{client.email?` · ${client.email}`:""}</option>) : <><option value="client-bright">Bright Dental</option><option value="client-kite">Kite Logistics</option><option value="client-mango">Mango Home</option></>}</select></div><button type="button" onClick={()=>setAddingClient(true)} className="self-end rounded-xl bg-[#edf2ff] px-3 py-3 text-[10px] font-extrabold text-[#3157be]">+ New</button></div>{!clients.length&&dataMode==="live"&&<p className="mt-2 text-[10px] text-amber-700">No clients yet. Create the first client without losing this invoice.</p>}</Field>
           <Field label="Invoice title"><input className="input" value={invoice.title} onChange={(event) => changed({ title: event.target.value })} /></Field>
           <Field label="Issue date"><input type="date" className="input" value={invoice.issueDate} onChange={(event) => changed({ issueDate: event.target.value })} /></Field>
           <Field label="Due date"><input type="date" className="input" value={invoice.dueDate} onChange={(event) => changed({ dueDate: event.target.value })} /></Field>
@@ -106,6 +109,7 @@ export function InvoiceStudio() {
         <div className="rounded-2xl border border-[#dce4f8] bg-[#f1f5ff] p-5"><FileText size={18} className="text-[#4163bd]" /><p className="mt-3 text-xs font-extrabold text-[#3d5591]">Stock-aware invoicing</p><p className="mt-2 text-[10px] leading-5 text-[#6b7aa1]">Product quantities are validated and deducted only when the invoice is issued.</p></div>
       </aside>
     </div>}
+    {addingClient&&<ClientFormModal live={dataMode==="live"} onClose={()=>setAddingClient(false)} onCreated={({id,name,email})=>{setClients(current=>[{id,name,email},...current]);changed({clientId:id,clientName:name,clientEmail:email});setAddingClient(false);}}/>}
     <style jsx global>{`.input{height:42px;width:100%;border:1px solid #dfe4ea;border-radius:10px;padding:0 12px;font-size:12px;outline:none;background:#fff}.input:focus{border-color:#7897fa;box-shadow:0 0 0 4px #e7edff}.invoice-paper{min-height:297mm}@media print{.invoice-paper{width:210mm;min-height:297mm}}`}</style>
   </div>;
 }
