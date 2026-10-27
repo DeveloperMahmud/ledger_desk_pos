@@ -1,4 +1,6 @@
 import type {TrackerTransaction} from "./types";
+export type ImportMapping={date:string;type:string;account:string;category:string;amount:string;currency:string;status:string;payee:string;reference:string;note:string;tags:string};
+export type ImportValidation={row:number;valid:boolean;errors:string[];value:Record<string,string>};
 const headers=["date","type","account","category","amount","currency","status","payee","reference","note","tags"];
 const cell=(value:unknown)=>`"${String(value??"").replaceAll('"','""')}"`;
 export function transactionsToCsv(rows:TrackerTransaction[],accountName:(id:string)=>string,categoryName:(id?:string)=>string){return[headers.join(","),...rows.map(row=>[row.occurredAt,row.type,accountName(row.accountId),categoryName(row.categoryId),row.amount,row.currency,row.status,row.payee,row.reference,row.note,row.tags.join("|")].map(cell).join(","))].join("\r\n");}

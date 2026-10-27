@@ -40,7 +40,7 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 - `/public/invoice/[token]` secure client invoice view
 - `/accounting`, `/reports`, `/settings`, `/team`, `/activity`, `/invite/[token]`
 - `/money`, `/money/accounts`, `/money/transactions`, `/money/categories`, `/money/reports`, `/money/planning`
-- `/platform-admin` for verified platform administrators only
+- `/admin` for verified platform administrators (`/platform-admin` redirects here)
 - `POST /api/email/process` protected outbox worker
 - `/api/platform/*` server-checked platform operations and `/api/workspace/restore` safe new-workspace restore
 
@@ -61,6 +61,7 @@ LedgerDesk is a sector-aware business management application built with Next.js 
 13. `202610270013_direct_clients.sql`
 14. `202610270014_money_tracker.sql`
 15. `202610270015_platform_branding_backup.sql`
+16. `202610270016_completion_hardening.sql`
 
 Never expose `SUPABASE_SERVICE_ROLE_KEY` to client components. Every operational row contains `workspace_id`; RLS and composite workspace foreign keys are both required. Stock, invoice issue, payments, proposal conversion and journal posting must go through trusted database functions.
 
@@ -68,7 +69,7 @@ Never expose `SUPABASE_SERVICE_ROLE_KEY` to client components. Every operational
 
 Money Tracker is intentionally separate from business accounting. `money_books` own accounts, categories, transactions, transfer groups, budgets, goals, recurring plans and attachments. Transfers are created atomically as linked out/in rows and never inflate income or expense reports. Provider fields (`source`, `external_id`, `import_batch_id`, `import_hash`) are extension points only; no banking API is connected.
 
-CSV/XLSX exchange runs in the browser with an open-source ZIP/XML implementation. Full backups use versioned JSON as canonical data and optionally package receipt files in ZIP. Restore creates a new workspace and remaps record IDs; it never overwrites the active workspace.
+CSV/XLSX exchange runs in the browser and validates a whole batch before its atomic RPC. Full backups use JSON v3 with a SHA-256 checksum and optionally package private files in ZIP. Restore previews counts, validates integrity, creates a new workspace and remaps IDs in dependency order; it never overwrites the active workspace.
 
 ## Platform administration
 

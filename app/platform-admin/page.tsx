@@ -1,1 +1,2 @@
-import {AppShell} from "@/components/app-shell";import {PlatformAdminDashboard} from "@/components/platform/platform-admin-dashboard";export default function PlatformAdminPage(){return <AppShell><PlatformAdminDashboard/></AppShell>}
+import {redirect} from "next/navigation";
+export default function LegacyPlatformAdminPage(){redirect("/admin")}

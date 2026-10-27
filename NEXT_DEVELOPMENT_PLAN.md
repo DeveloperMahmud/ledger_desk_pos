@@ -605,14 +605,14 @@ schemas.ts     → Zod input/file schemas
 
 | Phase | Status | Completion commit | Notes |
 |---|---|---|---|
-| Phase 0 — Baseline audit | Not started | — | — |
-| Phase 1 — Direct client creation | Not started | — | — |
-| Phase 2 — Money Tracker core | Not started | — | — |
-| Phase 3 — Budgets/import/export | Not started | — | — |
-| Phase 4 — Platform Super Admin | Not started | — | — |
-| Phase 5 — Branding/theme | Not started | — | — |
-| Phase 6 — Full backup/restore | Not started | — | — |
-| Phase 7 — Hardening/release | Not started | — | — |
+| Phase 0 — Baseline audit | Complete | `e9d6203` | Baseline and safeguards recorded |
+| Phase 1 — Direct client creation | Implemented | release candidate | Live cross-tenant SQL acceptance pending |
+| Phase 2 — Money Tracker core | Implemented | release candidate | Search/filter, archive, audited reverse and lifecycle RPCs included |
+| Phase 3 — Budgets/import/export | Implemented | release candidate | Planning, recurring posting, validation, receipts and rollback included |
+| Phase 4 — Platform Super Admin | Implemented | release candidate | Protected admin, provisioning, status and customer export included |
+| Phase 5 — Branding/theme | Implemented | release candidate | Runtime light/dark/system theme and contrast validation included |
+| Phase 6 — Full backup/restore | Implemented | release candidate | Backup v3 checksum, preview, history records and ID remapping included |
+| Phase 7 — Hardening/release | Local gates passed | release candidate | Live Supabase RLS/restore pilot remains configuration-dependent |
 
 ## 9. Instructions for future developer/AI
 
@@ -634,3 +634,4 @@ schemas.ts     → Zod input/file schemas
 | Date | Change |
 |---|---|
 | 2026-10-27 | Approved post-release requirements consolidated into an execution-ready plan: direct client creation, Money Tracker, manual finance accounts, Super Admin, global branding, tenant provisioning and restorable export/import. |
+| 2026-10-28 | Completion hardening implemented in migration 016. Local typecheck, lint, 32 tests and Next.js production build pass. Unchecked task boxes remain the live acceptance checklist and must not be treated as missing code by themselves. |

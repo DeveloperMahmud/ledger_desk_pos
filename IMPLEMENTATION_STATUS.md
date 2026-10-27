@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-Release 1.2 multi-tenant money, client and platform administration build — all approved next-development phases complete
+Release 1.3 completion-hardening candidate — approved code scope implemented; live Supabase acceptance remains configuration-dependent
 
 ## Completed scope
 
@@ -40,6 +40,10 @@ Release 1.2 multi-tenant money, client and platform administration build — all
 - Runtime global application name, logo, favicon and theme settings, kept separate from workspace invoice branding.
 - Versioned JSON and ZIP workspace backups plus safe restore into a new workspace with foreign-key ID remapping.
 - Database migrations `013` through `015` for direct clients, Money Tracker, platform branding and backup audit foundations.
+- Migration `016` adds transaction lifecycle RPCs, recurring posting, account-specific budgets, extended runtime themes, brand-asset storage and backup-run updates.
+- Money history search/filter, audited reversal, receipt access/delete, archive/reactivate controls, goal contributions and due recurring actions.
+- Server-protected `/admin`, customer search/status/export, runtime light/dark/system controls and WCAG contrast feedback.
+- Backup format v3 with SHA-256 checksum, restore preview, broader private-file restore and deferred relationship remapping.
 
 ## External configuration pending
 
@@ -59,8 +63,8 @@ See `DEPLOYMENT_AND_SECRETS.md` for the exact final configuration sequence.
 - `npm run typecheck` - passed.
 - `npm run lint` - passed with no warnings.
 - `npm run typecheck` - passed with no TypeScript errors.
-- `npm test` - 29/29 tests passed across 7 files.
-- `npm run build` - passed; 39 pages generated plus protected dynamic/API routes.
+- `npm test -- --run` - 32/32 tests passed across 8 files.
+- `npm run build` - passed; 41 pages generated plus protected dynamic/API routes.
 - `npm audit --omit=dev` - passed with 0 vulnerabilities.
 - Browser workflows verified: invoice template/quantity recalculation, full payment reconciliation, public invoice view, basic/full accounting mode and trial balance.
 - Browser console had no errors on the final tested route.

@@ -19,6 +19,7 @@ This directory contains the complete Release 1 backend definition. Apply the mig
 13. `202610270013_direct_clients.sql` - audited direct client creation/editing and normalized duplicate protection.
 14. `202610270014_money_tracker.sql` - isolated money books, accounts, categories, transfers, planning, imports and receipts.
 15. `202610270015_platform_branding_backup.sql` - global product appearance and backup-operation audit records.
+16. `202610270016_completion_hardening.sql` - Money lifecycle RPCs, recurring automation, extended theme settings, brand assets and backup updates.
 
 ## Security model
 
@@ -27,11 +28,11 @@ This directory contains the complete Release 1 backend definition. Apply the mig
 - Row Level Security and composite workspace foreign keys block cross-workspace access.
 - Privileged mutations use audited database functions instead of direct table writes.
 - Public invoices use hashed, expiring and revocable tokens; raw tokens are not stored.
-- `workspace-files` and `brand-assets` are private buckets with workspace-scoped policies.
+- `workspace-files` is private and workspace-scoped; `platform-assets` is public-read and service-role-write for validated global logos/favicons.
 - The service-role key is server-only and must never use a `NEXT_PUBLIC_` name.
 
 ## Apply and verify
 
-Use the Supabase dashboard SQL editor or linked Supabase CLI to apply every migration in order. Then create one test user and complete `/setup`. Verify inventory movement, invoice issue/payment, attachment upload, accounting posting and public invoice access before importing production data.
+Use the Supabase dashboard SQL editor or linked Supabase CLI to apply every migration in order. Run `supabase/tests/016_completion_security_contract.sql`, then create two test users in separate workspaces and complete the cross-tenant pilot. Verify Money Tracker transfer/reversal/import rollback, backup/restore and the existing business workflows before importing production data.
 
 The exact environment variables and deployment order are documented in `../DEPLOYMENT_AND_SECRETS.md`.

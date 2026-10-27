@@ -1,4 +1,5 @@
 import {NextResponse} from "next/server";
+import {createHash} from "node:crypto";
 import {createSupabaseAdminClient,createSupabaseSessionClient} from "@/lib/supabase/server";
 
 type Row=Record<string,unknown>;
@@ -9,9 +10,9 @@ const configs:Config[]=[
   {table:"crm_leads",strip:["converted_client_id"]},{table:"crm_clients",strip:["source_lead_id"]},{table:"crm_contacts",refs:{client_id:"crm_clients"}},{table:"service_packages"},
   {table:"proposals",refs:{lead_id:"crm_leads",client_id:"crm_clients"}},{table:"proposal_items",refs:{proposal_id:"proposals"}},{table:"projects",refs:{proposal_id:"proposals",client_id:"crm_clients"}},{table:"project_tasks",refs:{project_id:"projects"}},{table:"project_milestones",refs:{project_id:"projects"}},{table:"project_deliverables",refs:{project_id:"projects"}},{table:"project_revisions",refs:{project_id:"projects",deliverable_id:"project_deliverables"}},{table:"project_links",refs:{project_id:"projects"}},
   {table:"invoice_templates"},{table:"invoices",refs:{client_id:"crm_clients",project_id:"projects",template_id:"invoice_templates"}},{table:"invoice_items",refs:{invoice_id:"invoices",catalog_item_id:"catalog_items"},strip:["line_total"]},{table:"invoice_payments",refs:{invoice_id:"invoices"}},
-  {table:"ledger_accounts"},{table:"money_accounts"},{table:"financial_transactions",refs:{money_account_id:"money_accounts",category_account_id:"ledger_accounts"},strip:["journal_entry_id"]},{table:"accounting_periods"},{table:"journal_entries",strip:["reversal_of_id"]},{table:"journal_lines",refs:{journal_entry_id:"journal_entries",account_id:"ledger_accounts"}},{table:"email_templates"},
+  {table:"ledger_accounts"},{table:"money_accounts"},{table:"financial_transactions",refs:{money_account_id:"money_accounts",category_account_id:"ledger_accounts"},strip:["journal_entry_id"]},{table:"accounting_periods"},{table:"journal_entries",strip:["reversal_of_id"]},{table:"journal_lines",refs:{journal_entry_id:"journal_entries",account_id:"ledger_accounts"}},{table:"email_templates"},{table:"email_outbox",refs:{template_id:"email_templates"},strip:["provider_message_id","attachment_paths"]},
   {table:"suppliers"},{table:"purchase_orders",refs:{supplier_id:"suppliers",branch_id:"branches"}},{table:"purchase_order_items",refs:{purchase_order_id:"purchase_orders",inventory_item_id:"catalog_items"},strip:["line_total"]},{table:"stock_transfers",refs:{from_location_id:"inventory_locations",to_location_id:"inventory_locations"}},{table:"stock_transfer_items",refs:{transfer_id:"stock_transfers",inventory_item_id:"catalog_items"}},{table:"bills_of_materials",refs:{output_item_id:"catalog_items"}},{table:"bill_of_material_items",refs:{bill_of_material_id:"bills_of_materials",input_item_id:"catalog_items"}},{table:"production_orders",refs:{bill_of_material_id:"bills_of_materials",location_id:"inventory_locations"}},{table:"recurring_invoice_profiles",refs:{client_id:"crm_clients",template_id:"invoice_templates"}},
-  {table:"money_books"},{table:"tracker_accounts",refs:{book_id:"money_books"}},{table:"tracker_categories",refs:{book_id:"money_books"},strip:["parent_id"]},{table:"tracker_import_batches",refs:{book_id:"money_books"}},{table:"tracker_transfer_groups",refs:{book_id:"money_books"}},{table:"tracker_transactions",refs:{book_id:"money_books",account_id:"tracker_accounts",category_id:"tracker_categories",transfer_group_id:"tracker_transfer_groups",import_batch_id:"tracker_import_batches"}},{table:"tracker_budgets",refs:{book_id:"money_books",category_id:"tracker_categories"}},{table:"tracker_goals",refs:{book_id:"money_books"}},{table:"tracker_recurring_rules",refs:{book_id:"money_books",account_id:"tracker_accounts",category_id:"tracker_categories"}},{table:"tracker_attachments",refs:{transaction_id:"tracker_transactions"}},
+  {table:"money_books"},{table:"tracker_accounts",refs:{book_id:"money_books"}},{table:"tracker_categories",refs:{book_id:"money_books"},strip:["parent_id"]},{table:"tracker_import_batches",refs:{book_id:"money_books"}},{table:"tracker_transfer_groups",refs:{book_id:"money_books"}},{table:"tracker_transactions",refs:{book_id:"money_books",account_id:"tracker_accounts",category_id:"tracker_categories",transfer_group_id:"tracker_transfer_groups",import_batch_id:"tracker_import_batches"}},{table:"tracker_budgets",refs:{book_id:"money_books",category_id:"tracker_categories",account_id:"tracker_accounts"}},{table:"tracker_goals",refs:{book_id:"money_books"}},{table:"tracker_recurring_rules",refs:{book_id:"money_books",account_id:"tracker_accounts",destination_account_id:"tracker_accounts",category_id:"tracker_categories"}},{table:"tracker_attachments",refs:{transaction_id:"tracker_transactions"}},{table:"notifications"},{table:"audit_logs"},
 ];
 
 export async function POST(request:Request){
@@ -20,8 +21,9 @@ export async function POST(request:Request){
     const session=await createSupabaseSessionClient();
     const {data:{user}}=await session.auth.getUser();
     if(!user)return NextResponse.json({error:"Authentication required."},{status:401});
-    const body=await request.json() as {format?:string;version?:number;data?:Record<string,unknown>};
-    if(body.format!=="ledgerdesk-workspace-backup"||!body.data||!body.version||body.version>2)return NextResponse.json({error:"Unsupported or invalid LedgerDesk backup."},{status:400});
+    const body=await request.json() as {format?:string;version?:number;manifest?:{dataChecksum?:string;checksumAlgorithm?:string};data?:Record<string,unknown>};
+    if(body.format!=="ledgerdesk-workspace-backup"||!body.data||!body.version||body.version>3)return NextResponse.json({error:"Unsupported or invalid LedgerDesk backup."},{status:400});
+    if(body.manifest?.dataChecksum){const checksum=createHash("sha256").update(JSON.stringify(body.data)).digest("hex");if(checksum!==body.manifest.dataChecksum) return NextResponse.json({error:"Backup checksum validation failed. The file may be corrupt or modified."},{status:400});}
     const sourceWorkspace=(body.data.workspaces as Row[]|undefined)?.[0];
     if(!sourceWorkspace)return NextResponse.json({error:"Backup has no workspace record."},{status:400});
     const admin=createSupabaseAdminClient();
@@ -30,6 +32,7 @@ export async function POST(request:Request){
     const created=await admin.from("workspaces").insert({name,slug,business_type:sourceWorkspace.business_type||"agency",status:"active",created_by:user.id}).select("id").single();
     if(created.error)throw created.error;
     workspaceId=created.data.id;
+    const backupRun=await admin.from("workspace_backup_runs").insert({workspace_id:workspaceId,operation:"restore",format_version:body.version,status:"started",manifest:body.manifest||{},created_by:user.id}).select("id").single();if(backupRun.error)throw backupRun.error;
     const member=await admin.from("workspace_memberships").insert({workspace_id:workspaceId,user_id:user.id,role:"owner"});
     if(member.error)throw member.error;
     const sourceSettings=(body.data.workspace_settings as Row[]|undefined)?.[0]||{};
@@ -39,7 +42,7 @@ export async function POST(request:Request){
     const sequence=await admin.from("invoice_sequences").insert({workspace_id:workspaceId,prefix:String(sourceSequence?.prefix||"INV"),next_number:Number(sourceSequence?.next_number||1),reset_yearly:sourceSequence?.reset_yearly!==false,sequence_year:Number(sourceSequence?.sequence_year||new Date().getFullYear())});if(sequence.error)throw sequence.error;
 
     const maps=new Map<string,Map<string,string>>();const restored:Record<string,number>={};
-    const userColumns=new Set(["created_by","updated_by","uploaded_by","actor_id","invited_by","posted_by","assigned_to"]);
+    const userColumns=new Set(["created_by","updated_by","uploaded_by","actor_id","invited_by","posted_by","assigned_to","recorded_by","user_id"]);
     for(const config of configs){
       const source=body.data[config.table];if(!Array.isArray(source)||!source.length)continue;
       const idMap=new Map<string,string>();maps.set(config.table,idMap);let count=0;
@@ -54,6 +57,11 @@ export async function POST(request:Request){
       }
       restored[config.table]=count;
     }
+    const deferred=[
+      {table:"product_categories",column:"parent_id",target:"product_categories"},{table:"crm_leads",column:"converted_client_id",target:"crm_clients"},{table:"crm_clients",column:"source_lead_id",target:"crm_leads"},{table:"tracker_categories",column:"parent_id",target:"tracker_categories"},{table:"financial_transactions",column:"journal_entry_id",target:"journal_entries"},{table:"journal_entries",column:"reversal_of_id",target:"journal_entries"},
+    ];
+    for(const item of deferred){for(const sourceRow of (body.data[item.table] as Row[]|undefined)||[]){const oldId=String(sourceRow.id||"");const oldRef=sourceRow[item.column];const newId=maps.get(item.table)?.get(oldId);const newRef=typeof oldRef==="string"?maps.get(item.target)?.get(oldRef):undefined;if(newId&&newRef){const update=await admin.from(item.table).update({[item.column]:newRef}).eq("workspace_id",workspaceId).eq("id",newId);if(update.error)throw new Error(`${item.table}.${item.column}: ${update.error.message}`);}}}
+    await admin.from("workspace_backup_runs").update({status:"completed",manifest:{...(body.manifest||{}),restored},completed_at:new Date().toISOString()}).eq("id",backupRun.data.id);
     await admin.from("audit_logs").insert({workspace_id:workspaceId,actor_id:user.id,action:"workspace.restored",entity_type:"workspace",entity_id:workspaceId,new_values:{backupVersion:body.version,restored}});
     return NextResponse.json({workspaceId,name,restored});
   }catch(cause){
